@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<style>
+    /* Custom Alert Styles */
+    #custom-alert {
+        min-width: 250px;
+        max-width: 400px;
+        transform: translateX(100%);
+        /* Initially hidden off-screen */
+    }
+
+    #custom-alert.show {
+        transform: translateX(0);
+        /* Slide-in effect */
+    }
+
+    #custom-alert .close-btn {
+        margin-left: auto;
+    }
+</style>
+
+<body>
+    <!-- Custom Alert Container -->
+    <div id="custom-alert"
+        class="fixed  bg-[#5e3dc6] text-white p-4 rounded-lg shadow-lg  transition-transform duration-300 ease-in-out">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-info-circle"></i>
+            <span id="custom-alert-message">This is a custom alert!</span>
+        </div>
+        <button class="ml-auto text-sm font-semibold hover:text-gray-300" onclick="closeCustomAlert()">Close</button>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    function showCustomAlert(message) {
+        const alertBox = document.getElementById('custom-alert');
+        const alertMessage = document.getElementById('custom-alert-message');
+        alertMessage.innerText = message;
+        alertBox.classList.remove('hidden');
+        alertBox.classList.add('show');
+
+        // Auto-close the alert after 3 seconds
+        setTimeout(() => {
+            closeCustomAlert();
+        }, 3000);
+    }
+
+    function closeCustomAlert() {
+        const alertBox = document.getElementById('custom-alert');
+        alertBox.classList.remove('show');
+        alertBox.classList.add('hidden');
+    }
+
+</script>

@@ -6,23 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TriplePay Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <style>
+    .hidden {
+    display: none;
+  }
     .home-nav {
         cursor: pointer;
         display: inline-block;
         padding: 10px;
         text-align: center;
     }
+
     .send-nav {
         cursor: pointer;
         display: inline-block;
         padding: 10px;
         text-align: center;
     }
+
     .pay-nav {
         cursor: pointer;
         display: inline-block;
@@ -80,13 +89,13 @@
                 <a id="pay-nav" href="./pay.html"
                     class="flex items-center hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
                     <i id="pay-entry" class="page fa-solid fa-money-bill-wave mr-2"></i>Pay
-                     
+
                 </a>
                 <a id="gift-nav" href="./giftcards.html"
                     class="hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
                     <i id="gift-entry" class="page fa-solid fa-wallet mr-2"></i> My Wallet
-                        
-                    </span> 
+
+                    </span>
                 </a>
                 <a id="card-nav" href="./card.html"
                     class="flex items-center hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
@@ -136,36 +145,39 @@
         </div>
     </nav>
 
-    
-    
+
+
     <script>
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
-    
+
         mobileMenuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
     </script>
-    
-    
-    
+
+
+
     <!-- Main Content -->
     <main class="min-h-screen bg-[#5e3dc6] py-8">
         <div class="container mx-auto px-4 lg:px-0">
             <!-- Header -->
-            <header class="flex justify-center items-center mb-10"> 
+            <header class="flex justify-center items-center mb-10">
                 <h2 class="text-3xl font-bold text-[#5e3dc6]">Your Card</h2>
 
-                
+
             </header>
-            
+
 
             <!-- Card Section -->
             <section id="card" class="flex justify-center mb-12">
-                <div class="relative w-[350px] h-[220px] bg-gradient-to-br from-gray-900 to-black rounded-xl shadow-lg text-white p-6 transition-transform duration-300 transform hover:scale-105">
+                <div
+                    class="relative w-[350px] h-[220px] bg-gradient-to-br from-gray-900 to-black rounded-xl shadow-lg text-white p-6 transition-transform duration-300 transform hover:scale-105">
 
                     <!-- Glossy Effect -->
-                    <div class="absolute inset-0 rounded-xl bg-gradient-to-t from-transparent to-white opacity-5 pointer-events-none"></div>
+                    <div
+                        class="absolute inset-0 rounded-xl bg-gradient-to-t from-transparent to-white opacity-5 pointer-events-none">
+                    </div>
 
                     <!-- TriplePay Branding -->
                     <div class="absolute top-4 left-4">
@@ -194,12 +206,14 @@
 
                     <!-- Cardholder Name -->
                     <div class="absolute bottom-8 left-4 text-sm font-semibold tracking-wider text-gray-300">
-                        <span>John Doe</span>
+                        <span id="full-name" class="text-white z-50 "></span>
+                        
                     </div>
 
                     <!-- Visa Logo -->
                     <div class="absolute bottom-4 right-4">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa Logo" class="h-8">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa Logo"
+                            class="h-8">
                     </div>
                 </div>
             </section>
@@ -208,29 +222,32 @@
 
             <!-- eye toggle -->
 
-            <div class="flex items-center justify-center gap-2">
+            <div class="flex items-center justify-center gap-2 mb-8">
                 <!-- Eye Icon -->
                 <i id="shut" class="fa-solid fa-eye cursor-pointer"></i>
                 <!-- Eye-Slash Icon -->
-                <i id="open" class="fa-solid fa-eye-slash cursor-pointer hidden"></i>
+                <i id="open" class="fa-solid fa-eye-slash cursor-pointer hidden"><span></span></i>
             </div>
-            
+
 
             <!-- Options Section -->
             <section class="flex flex-col gap-8 max-w-3xl mx-auto w-full">
                 <!-- Option 1: Block Card -->
-                <div class="group bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 hover:bg-[#D00000] hover:text-[#F25F5C] cursor-pointer">
+                <div
+                    class="group bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 hover:bg-[#D00000] hover:text-[#F25F5C] cursor-pointer">
                     <div class="flex items-center">
-                        <span class="group-hover:text-white  icon-block mr-4 text-3xl text-[#5e3dc6]"><i class="fa-solid fa-ban"></i></span>
+                        <span class="group-hover:text-white  icon-block mr-4 text-3xl text-[#5e3dc6]"><i
+                                class="fa-solid fa-ban"></i></span>
                         <div>
                             <p class="group-hover:text-white text-lg font-semibold text-gray-700">Block Card</p>
                             <p class="group-hover:text-white text-sm text-gray-500">Temporarily disable this card</p>
                         </div>
                     </div>
                 </div>
-            
+
                 <!-- Option 2: Manage Card -->
-                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 hover:bg-gray-100 cursor-pointer">
+                <div
+                    class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 hover:bg-gray-100 cursor-pointer">
                     <div class="flex items-center">
                         <span class="icon-manage mr-4 text-3xl text-[#5e3dc6]"><i class="fa-solid fa-gear"></i></span>
                         <div>
@@ -239,11 +256,13 @@
                         </div>
                     </div>
                 </div>
-            
+
                 <!-- Option 3: Card FAQs -->
-                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 hover:bg-gray-100 cursor-pointer">
+                <div
+                    class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 hover:bg-gray-100 cursor-pointer">
                     <div class="flex items-center">
-                        <span class="icon-faq mr-4 text-3xl text-[#5e3dc6]"><i class="fa-solid fa-question-circle"></i></span>
+                        <span class="icon-faq mr-4 text-3xl text-[#5e3dc6]"><i
+                                class="fa-solid fa-question-circle"></i></span>
                         <div>
                             <p class="text-lg font-semibold text-gray-700">Card FAQs</p>
                             <p class="text-sm text-gray-500">Learn more about TriplePay cards</p>
@@ -251,72 +270,98 @@
                     </div>
                 </div>
             </section>
-            
-            
+
+
         </div>
     </main>
 
     <footer class="bg-[#5e3dc6] text-white py-8 px-4 sm:px-10 lg:px-20">
         <div class="max-w-screen-xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          
-          <!-- Logo and Description -->
-          <div class="flex flex-col space-y-4">
-            <h2 class="text-2xl font-semibold text-white">Pay Daddie</h2>
-            <p class="text-sm text-gray-300">
-              Simplifying finance, empowering your future. Pay Daddie offers secure and efficient financial solutions for </br> everyone.
-            </p>
-          </div>
-      
-          <!-- Quick Links -->
-          <div>
-            <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul class="space-y-2 text-sm">
-              <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Home</a></li>
-              <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">About Us</a></li>
-              <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Services</a></li>
-              <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">FAQs</a></li>
-              <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Contact</a></li>
-            </ul>
-          </div>
-      
-          <!-- Contact Information -->
-          <div>
-            <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
-            <p class="text-sm text-gray-300">28 Ibitoye Str, Ajegunle-Apapa, Lagos</p>
-            <p class="text-sm text-gray-300">Email: support@paydaddie.com</p>
-            <p class="text-sm text-gray-300">Phone: +234 817 1347 263</p>
-          </div>
-      
-          <!-- Social Media Links -->
-          <div>
-            <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
-            <div class="flex space-x-4">
-              <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
-                <i class="fab fa-facebook-f"></i>
-              </a>
-              <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
-                <i class="fab fa-twitter"></i>
-              </a>
-              <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
-                <i class="fab fa-linkedin-in"></i>
-              </a>
-              <a href="https://www.instagram.com/" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
-                <i class="fab fa-instagram"></i>
-              </a>
+
+            <!-- Logo and Description -->
+            <div class="flex flex-col space-y-4">
+                <h2 class="text-2xl font-semibold text-white">Pay Daddie</h2>
+                <p class="text-sm text-gray-300">
+                    Simplifying finance, empowering your future. Pay Daddie offers secure and efficient financial
+                    solutions for </br> everyone.
+                </p>
             </div>
-          </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Home</a></li>
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">About Us</a></li>
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Services</a></li>
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">FAQs</a></li>
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Information -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                <p class="text-sm text-gray-300">28 Ibitoye Str, Ajegunle-Apapa, Lagos</p>
+                <p class="text-sm text-gray-300">Email: support@paydaddie.com</p>
+                <p class="text-sm text-gray-300">Phone: +234 817 1347 263</p>
+            </div>
+
+            <!-- Social Media Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://www.instagram.com/"
+                        class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-      
+
         <!-- Footer Bottom -->
         <div class="mt-8 border-t border-gray-500 pt-6 text-center text-xs text-gray-400">
-          <p>&copy; 2024 Pay Daddie. All rights reserved.</p>
+            <p>&copy; 2024 Pay Daddie. All rights reserved.</p>
         </div>
-      </footer>
+    </footer>
 
 </body>
 
 </html>
-<script src="./js/script.js" ></script>
+<script src="./js/script.js"></script>
+
+
+<script>
+    // JavaScript
+    document.addEventListener("DOMContentLoaded", () => {
+        const shutIcon = document.getElementById("shut");
+        const openIcon = document.getElementById("open");
+        const card = document.getElementById("card");
+
+        // Hide the card initially with the eye icon toggle
+        shutIcon.addEventListener("click", () => {
+            shutIcon.classList.add("hidden");
+            openIcon.classList.remove("hidden");
+            card.classList.add("hidden"); // Hide the card
+        });
+
+        openIcon.addEventListener("click", () => {
+            openIcon.classList.add("hidden");
+            shutIcon.classList.remove("hidden");
+            card.classList.remove("hidden"); // Show the card
+        });
+    });
+
+</script>
 
 <!-- NAV BAR EFFECTS -->
 <script>
@@ -401,8 +446,70 @@
 </script>
 
 
-   <script>
-          const card= document.getElementById("card");
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    function users() {
+        // Retrieve the currentUser data from localStorage
+        const currentUserData = localStorage.getItem('currentUser');
 
-   </script>
+        if (!currentUserData) {
+            console.log("No user ID found in localStorage.");
+            window.location.href = 'login.html'; // Redirect to login if no user is stored
+            return; // Exit if no currentUserData is found
+        }
 
+        const { uid } = JSON.parse(currentUserData); // Parse and extract the UID from the stored data
+
+        // Reference the Firestore document using the UID
+        const docRef = db.collection("users").doc(uid);
+
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+                const userData = doc.data();
+
+                // Update UI elements with data from the Firestore document
+                document.getElementById("user-firstname").innerText = userData.firstname || "N/A";
+                document.getElementById("full-name").innerText = `${userData.firstname || "N/A"} ${userData.lastname || "N/A"}`;
+                document.getElementById("user-card").innerText = userData.card || "N/A";
+                document.getElementById("user-address").innerText = userData.address || "N/A";
+                document.getElementById("user-phone").innerText = userData.phone || "N/A";
+                document.getElementById("user-email").innerText = userData.email || "N/A";
+                document.getElementById("user-country").innerText = userData.country || "N/A";
+                document.getElementById("user-account").innerText = userData.account || "N/A";
+                
+
+               // Display "Last updated X ago" for balance timestamp
+                if (userData.balanceTimestamp) {
+                    const balanceTimestamp = userData.balanceTimestamp.toDate();
+                    const updateTimeAgo = getTimeAgo(balanceTimestamp);
+                    document.getElementById("balance-timestamp").innerText = `Last updated ${updateTimeAgo}`;
+                } else {
+                    document.getElementById("balance-timestamp").innerText = "N/A";
+                }
+            } else {
+                console.log("No such document!");
+                alert("No user data found in Firestore.");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+    }
+
+    // Helper function to calculate time ago in seconds, minutes, or hours
+    function getTimeAgo(timestamp) {
+        const now = new Date();
+        const secondsAgo = Math.floor((now - timestamp) / 1000);
+
+        if (secondsAgo < 60) return `${secondsAgo}s ago`;
+        const minutesAgo = Math.floor(secondsAgo / 60);
+        if (minutesAgo < 60) return `${minutesAgo}m ago`;
+        const hoursAgo = Math.floor(minutesAgo / 60);
+        return `${hoursAgo}h ago`;
+    }
+
+    // Call the users function to fetch and display the user data
+    users();
+});
+
+</script>

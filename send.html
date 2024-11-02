@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>TriplePay Dashboard</title>
     <link rel="stylesheet" href="./css/app.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -243,7 +244,7 @@
             <h3 class="text-lg text-gray-600 text-center">New NGN Recipient</h3>
 
             <!-- Form -->
-            <form class="space-y-5">
+            <form id="form" class="space-y-5">
                 <!-- Bank Selection -->
                 <div class="input-group">
                     <label for="bank" class="block text-sm font-medium text-gray-700">Bank</label>
@@ -283,7 +284,7 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit"
+                <button  type="submit"
                     class="submit-btn w-full py-3 bg-[#5e3dc6] text-white rounded-lg font-semibold hover:bg-[#4a34b8] focus:ring-4 focus:ring-[#BFBB9C] transition-all duration-300 ease-in-out">
                     Pay
                 </button>
@@ -358,7 +359,10 @@
 </body>
 
 </html>
+
+
 <script src="./js/script.js"></script>
+
 
 
 <script>
@@ -405,116 +409,6 @@
     // Load the banks when the page loads
     loadBanks();
 </script>
-
-
-<script>
-    // Get current user data from localStorage
-    const currentUserData = JSON.parse(localStorage.getItem('currentUser'));
-
-    // Check if user is logged in and has valid data
-    if (currentUserData && currentUserData.uid) {
-        const uid = currentUserData.uid;
-
-        // Fetch the user's account balance from Firestore
-        db.collection("users").doc(uid).get().then(doc => {
-            if (doc.exists) {
-                const userData = doc.data();
-                const userBalance = userData.balance || 0;
-
-                // Log user's balance for debugging
-                console.log("User's balance:", userBalance);
-
-                // Handle form submission
-                document.querySelector('form').addEventListener('submit', async function (e) {
-                    e.preventDefault(); // Prevent form from refreshing the page
-
-                    // Get values from form inputs
-                    const recipientBank = document.getElementById('banks').value;
-                    const recipientAccount = document.getElementById('account-number').value;
-                    const transferAmount = parseFloat(document.getElementById('Amount').value);
-                    const description = document.getElementById('description').value;
-
-                    // Check if transfer amount is valid
-                    if (transferAmount <= 0) {
-                        alert("Invalid amount entered. Please enter a valid amount.");
-                        return;
-                    }
-
-                    // Check if the user has sufficient balance
-                    if (transferAmount > userBalance) {
-                        alert("Insufficient balance for this transfer.");
-                        return;
-                    }
-
-                    // Fetch the recipient's account to confirm it exists
-                    const querySnapshot = await db.collection("users").where("accountNumber", "==", recipientAccount).get();
-                    if (querySnapshot.empty) {
-                        alert("Invalid recipient account number. Please check and try again.");
-                        return;
-                    }
-
-                    // Assuming there's only one match for the account number
-                    const recipientDoc = querySnapshot.docs[0];
-                    const recipientData = recipientDoc.data();
-                    const recipientBalance = recipientData.balance || 0;
-
-                    // Perform the transfer: Deduct from sender and add to recipient
-                    const newSenderBalance = userBalance - transferAmount;
-                    const newRecipientBalance = recipientBalance + transferAmount;
-
-                    // Start a batch operation for atomic updates
-                    const batch = db.batch();
-
-                    // Update sender's balance
-                    const senderRef = db.collection("users").doc(uid);
-                    batch.update(senderRef, { balance: newSenderBalance });
-
-                    // Update recipient's balance
-                    const recipientRef = db.collection("users").doc(recipientDoc.id);
-                    batch.update(recipientRef, { balance: newRecipientBalance });
-
-                    // Create a unique transaction ID using the current date and time
-                    const transactionId = new Date().toISOString(); // This creates a string like "2024-10-26T10:00:00Z"
-
-                    // Reference the user's transaction collection
-                    const transactionRef = userRef.collection("transaction");
-
-                    // Prepare transaction data
-                    const transactionData = {
-                        id: transactionId,
-                        sender: uid,
-                        recipient: recipientDoc.id,
-                        amount: transferAmount,
-                        description: description,
-                        timestamp: new Date() // Timestamp of the transaction
-                    };
-
-                    // Commit the batch operation
-                    await batch.commit();
-
-                    // Save the transaction record to Firestore using the unique ID
-                    await transactionRef.doc(transactionId).set(transactionData);
-
-                    alert(`Transfer of NGN ${transferAmount} to account ${recipientAccount} successful!`);
-                    console.log("Transaction recorded successfully:", transactionData);
-                    console.log("New sender balance:", newSenderBalance);
-                    console.log("New recipient balance:", newRecipientBalance);
-                });
-            } else {
-                console.error("No user data found for this UID.");
-            }
-        }).catch(error => {
-            console.error("Error retrieving user data:", error);
-        });
-    } else {
-        console.error("No current user found in localStorage.");
-    }
-
-</script>
-
-
-
-
 
 
 <!-- NAV BAR EFFECTS -->
@@ -688,3 +582,93 @@
         });
     });
 </script>
+
+
+<!-- money transfer and recieving  -->
+
+<script> 
+    document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const banks = document.getElementById('banks').value;
+        const accountNumber = document.getElementById("account-number").value.trim();
+        const amount = parseFloat(document.getElementById("Amount").value); 
+        const description = document.getElementById("description").value;
+
+        const currentUserData = localStorage.getItem("currentUser");
+
+        if (!currentUserData) {
+            console.log("Invalid user");
+            return;
+        }
+
+        const { uid } = JSON.parse(currentUserData);
+
+        // Fetch sender's data
+        const userRef = await db.collection("users").doc(uid).get();
+        const userDoc = userRef.data();
+
+        if (!userDoc) {
+            console.log("User document not found");
+            return;
+        }
+
+        async function recieverTrigger() {
+            let foundUser = null;
+
+            // Search for receiver in users collection
+            const querySnapshot = await db.collection("users").get();
+            querySnapshot.forEach((doc) => {
+                if (doc.data().account == accountNumber) {
+                    foundUser = {
+                        email: doc.data().email,
+                        id: doc.id,
+                        balance: doc.data().balance,
+                        account: doc.data().account,
+                        firstname: doc.data().firstname,
+                        lastname: doc.data().lastname,
+                    };
+                }
+            });
+
+            if (!foundUser) {
+                alert("Receiver account not found");
+                return null;
+            }
+            return foundUser;
+        }
+
+        async function moneyMath(receiver) {
+            const senderBalance = userDoc.balance;
+
+            // Check if the amount is valid
+            if (amount <= 0 || amount > senderBalance) {
+                alert("Invalid amount or insufficient balance");
+                return false;
+            }
+
+            // Deduct from sender and update Firestore
+            await db.collection("users").doc(uid).update({
+                balance: senderBalance - amount,
+            });
+
+            // Add to receiver and update Firestore
+            await db.collection("users").doc(receiver.id).update({
+                balance: receiver.balance + amount,
+            });
+
+            return true;
+        }
+
+        const receiver = await recieverTrigger();
+        if (receiver) {
+            const success = await moneyMath(receiver);
+            if (success) {
+                alert("Transfer successful");
+            }
+        }
+    });
+});
+
+        
+    </script> 

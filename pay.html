@@ -215,7 +215,7 @@
             <div class="tpay-section mb-16">
                 <h2 class="text-2xl lg:text-3xl font-semibold text-gray-800 mb-8 text-center">Cardless Payments</h2>
                 <div class="tpay-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <a href="#" class="tpay-option group">
+                    <a id="action-trigger" href="#" class="tpay-option group">
                         <div class="tpay-icon text-5xl mb-3 transition-all group-hover:scale-105">🏦</div>
                         <span class="text-lg font-medium">Pay with Bank</span>
                     </a>
@@ -461,4 +461,44 @@
             window.location.href = "./card.html"; // Replace with your URL
         }, 2000); // 3 seconds
     });
+</script>
+
+<!-- paystack action -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
+<script>
+    document.getElementById('paystack-btn').addEventListener('click', function () {
+    // Show the spinner and hide the button
+    const spinner = document.getElementById('spinner');
+    const button = this;
+    
+    button.classList.add('hidden'); // Hide the button
+    spinner.classList.remove('hidden'); // Show the spinner
+    
+    // Wait for 2 seconds
+    setTimeout(() => {
+        // Call Paystack setup
+        var handler = PaystackPop.setup({
+            key: 'pk_live_e99f325375ceeaf6e5b48e14ff423f6ad031ebe0', // Replace with your public key
+            email: 'adeshina93@gmail.com', // Customer's email
+            amount: 500000, // Amount in kobo (for example, 5000 NGN = 500000 kobo)
+            currency: 'NGN',
+            ref: 'ref_' + new Date().getTime(), // Generate a unique reference
+            callback: function (response) {
+                // Handle successful payment here
+                console.log('Payment complete! Reference: ' + response.reference);
+                // Call your server to verify the transaction and top up balance
+            },
+            onClose: function () {
+                alert('Transaction was not completed, window closed.');
+            }
+        });
+        handler.openIframe();
+
+        // Hide the spinner and show the button again
+        spinner.classList.add('hidden');
+        button.classList.remove('hidden');
+    }, 2000); // 2 seconds
+});
+
 </script>

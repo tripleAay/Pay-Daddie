@@ -30,9 +30,9 @@
     }
 </script>
 
-<body class="bg-gray-100 p-6 flex items-center justify-center h-screen bg-cover bg-center"
+<body class="bg-gray-100 p-10 flex items-center justify-center h-screen bg-cover bg-center"
     style="background-image: url('./assets/image/background image.jpg');">
-    <div class="bg-white/80 shadow-lg rounded-lg p-8 max-w-lg w-full max-h-screen overflow-y-auto">
+    <div class="bg-white/80 shadow-lg rounded-lg p-10 max-w-lg w-full max-h-screen overflow-y-auto">
 
         <!-- Logo Section -->
         <div class="text-center mb-6">
@@ -199,7 +199,12 @@
         }
 
         function generateDebitCardNumber() {
-            return Math.floor(Math.random() * 1000000000000000); // Generates random 16-digit number
+            const cardNum = " "; 
+            for(let i=0; i<4; i++){
+                const numGen = Math.floor(1000 + Math.random()*9000);
+                cardNum = numGen++; 
+            }
+            return cardNum; // Generates random 16-digit number
         }
 
         function generateCVV() {
