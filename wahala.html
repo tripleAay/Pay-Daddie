@@ -62,3 +62,197 @@
     }
 
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const transactionList = document.getElementById("transaction-list");
+    
+        document.getElementById("form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            
+            // Get input values
+            const banks = document.getElementById('banks').value;
+            const accountNumber = document.getElementById("account-number").value.trim();
+            const amount = parseFloat(document.getElementById("Amount").value);
+            const description = document.getElementById("description").value;
+            
+            // Retrieve current user data from local storage
+            const currentUserData = localStorage.getItem("currentUser");
+            if (!currentUserData) {
+                console.log("Invalid user");
+                return;
+            }
+    
+            const { uid } = JSON.parse(currentUserData);
+    
+            // Fetch sender's data
+            const userRef = await db.collection("users").doc(uid).get();
+            const userDoc = userRef.data();
+            if (!userDoc) {
+                console.log("User document not found");
+                return;
+            }
+    
+            // Function to find the receiver based on account number
+            async function recieverTrigger() {
+                let foundUser = null;
+                const querySnapshot = await db.collection("users").get();
+                querySnapshot.forEach((doc) => {
+                    if (doc.data().account == accountNumber) {
+                        foundUser = {
+                            email: doc.data().email,
+                            id: doc.id,
+                            balance: doc.data().balance,
+                            account: doc.data().account,
+                            firstname: doc.data().firstname,
+                            lastname: doc.data().lastname,
+                        };
+                    }
+                });
+    
+                if (!foundUser) {
+                    alert("Receiver account not found");
+                    return null;
+                }
+                return foundUser;
+            }
+    
+            // Function to perform the money transfer
+            async function moneyMath(receiver) {
+                const senderBalance = userDoc.balance;
+    
+                if (amount <= 0 || amount > senderBalance) {
+                    alert("Invalid amount or insufficient balance");
+                    return false;
+                }
+    
+                await db.collection("users").doc(uid).update({
+                    balance: senderBalance - amount,
+                });
+    
+                await db.collection("users").doc(receiver.id).update({
+                    balance: receiver.balance + amount,
+                });
+    
+                const transactionData = {
+                    to: {
+                        account: receiver.account,
+                        name: `${receiver.firstname} ${receiver.lastname}`,
+                        email: receiver.email
+                    },
+                    from: {
+                        account: userDoc.account,
+                        name: `${userDoc.firstname} ${userDoc.lastname}`,
+                        email: userDoc.email
+                    },
+                    amount: amount,
+                    description: description || "No description provided",
+                    date: new Date().toISOString(),
+                };
+    
+                await db.collection("users").doc(uid).collection("transactions").doc().set(transactionData);
+    
+                // Call function to display transaction on the page
+                displayTransaction(transactionData);
+                return true;
+            }
+    
+            // Execute the transaction
+            const receiver = await recieverTrigger();
+            if (receiver) {
+                const success = await moneyMath(receiver);
+                if (success) {
+                    alert("Transfer successful");
+                    form.reset();
+                    form.style.display = "none"; 
+                }
+            }
+        });
+    
+        // Function to display each successful transaction in the specified format
+        function displayTransaction(transactionData) {
+            const li = document.createElement("li");
+            li.className = "flex items-center justify-between py-4 px-6";
+            
+            // Set up inner HTML structure with transaction details
+            li.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <img src="https://example.com/kuda-logo.png" alt="Kuda Bank Logo" class="h-10 w-10">
+                    <div>
+                        <p class="font-medium text-gray-800">${transactionData.to.name}</p>
+                        <p class="text-sm text-gray-500">${new Date(transactionData.date).toLocaleTimeString()}</p>
+                    </div>
+                </div>
+                <p class="text-gray-800">₦${transactionData.amount.toFixed(2)}</p>
+            `;
+    
+            // Append the new transaction item to the list
+            transactionList.appendChild(li);
+        }
+    });
+    </script>
+
+
+
+
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Function to fetch and display beneficiaries
+        async function displayBeneficiaries() {
+            const currentUserData = localStorage.getItem('currentUser');
+            if (!currentUserData) {
+                alert("No user is currently logged in.");
+                return;
+            }
+
+            const { uid } = JSON.parse(currentUserData);
+            const userRef = db.collection("users").doc(uid).collection("beneficiary");
+
+            try {
+                const beneficiariesSnapshot = await userRef.get();
+                const beneficiarySection = document.querySelector('.beneficiary-section');
+                
+                beneficiarySection.innerHTML = ""; // Clear previous data
+                
+                if (beneficiariesSnapshot.empty) {
+                    beneficiarySection.innerHTML = "<p>No beneficiaries found.</p>";
+                    return;
+                }
+
+                beneficiariesSnapshot.forEach((doc) => {
+                    const beneficiaryData = doc.data();
+                    const initial = beneficiaryData.firstname.charAt(0).toUpperCase();
+
+                    const beneficiaryCard = document.createElement("div");
+                    beneficiaryCard.className = "beneficiary-card flex flex-col items-center px-10 py-4 bg-white shadow-md rounded-md border border-gray-200 max-w-[100px]";
+
+                    beneficiaryCard.innerHTML = `
+                        <!-- Circular Border for Initials -->
+                        <div class="beneficiary-initials w-10 h-10 bg-yellow-400 text-white rounded-full flex items-center justify-center font-semibold text-xs ring-2 ring-gray-100 mb-1">
+                            ${initial}
+                        </div>
+
+                        <!-- Beneficiary Details -->
+                        <div class="text-center space-y-0.5 text-xs">
+                            <p class="font-semibold text-gray-800 leading-tight">${beneficiaryData.firstname}</p>
+                            <p class="font-semibold text-gray-800 leading-tight">${beneficiaryData.lastname}</p>
+                            <p class="font-medium text-gray-700 leading-tight">${beneficiaryData.account}</p>
+                        </div>
+                    `;
+
+                    beneficiarySection.appendChild(beneficiaryCard);
+                });
+            } catch (error) {
+                console.error("Error fetching beneficiaries:", error);
+                alert("There was an error fetching beneficiaries. Please try again.");
+            }
+        }
+
+        // Call the display function on page load
+        displayBeneficiaries();
+    });
+</script>

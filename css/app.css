@@ -18,6 +18,7 @@
     align-items: center;
     justify-content: center;
     margin: 0 auto;
+     
     /* Center .main within its parent */
 }
 
@@ -261,7 +262,7 @@
 .testimonials {
     text-align: center;
     padding: 50px 20px;
-    background-color: #FDE8E9;
+    background-color: #FFBE0B;
     
 }
 
@@ -758,45 +759,42 @@ body {
 
 
 
-.beneficiary-topsectiondetails{
+.beneficiary-topsectiondetails {
     width: auto;
-    height: 17px;
-    /* background-color:white; */
+    height: auto;
+    background-color: #f0f4f8; /* Soft background color */
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
     margin-top: 30px;
-    cursor: pointer; 
-}
-.beneficiary-sectiondetails{
-    width: auto;
-    height: 110px;
-    /* background-color:#4B1979; */
-    display: flex;
-    align-items: center;
-    justify-content: left;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333; /* Text color */
 }
 
-.beneficiary-initials{
-    width: 56px;
-    height: 56px;
-    background-color: yellow;
-    border-radius: 50%;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
+.beneficiary-section {
+    background-color: #ffffff; /* Clean white background */
+    padding: 20px;
+    border: 1px solid #ccc; /* Light border for structure */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-top: 10px;
+    transition: all 0.3s ease; /* Smooth transition for show/hide */
 }
 
-.beneficairy-contact{
-    width: 80px;
-    height: 91px;
-    /* background-color: #343a40; */
-    margin-right: 15px;
-    padding: 10px;
-    align-items: center;
+.hidden {
+    display: none; /* Hide the section */
 }
+
+.beneficiary-topsectiondetails p:hover {
+    color: #007bff; /* Highlight text on hover */
+    text-decoration: underline; /* Underline on hover for better UX */
+}
+
 
 .transactional-history{
     width: auto;
@@ -988,12 +986,11 @@ input[type="text"] {
 
 
 /* CARD SECTION */
-header {
+/* header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-}
+} */
 
 header h2 {
     font-size: 1.5em;

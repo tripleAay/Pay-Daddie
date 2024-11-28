@@ -111,13 +111,22 @@
             </div>
 
             <!-- Account Section -->
-            <div class="account flex items-center space-x-4 cursor-pointer  bg-[#3B28CC] p-2 rounded-lg  hover:bg-[] transition-all duration-300 ease-in-out shadow-sm"
-                onclick="window.location.href='./profile.html'">
-                <span class="font-semibold text-white hover:text-white ">Hello &#128512; <span
-                        id="user-firstname"></span></span>
-                <img id="profileImagePreview" alt="Profile Picture"
-                    class="w-10 h-10 rounded-full object-cover border-2 border-[#5e3dc6] hover:border-[#4e32a9] transition-all duration-300 ease-in-out">
+            <div class="account flex items-center space-x-4 cursor-pointer bg-[#3B28CC] p-4 rounded-lg hover:bg-[#4e32a9] transition-all duration-300 ease-in-out shadow-sm"
+            onclick="window.location.href='./profile.html'">
+
+            <!-- Profile Image -->
+            <img id="dashboardLogo" alt="Profile Picture"
+                class="w-12 h-12 rounded-full object-cover border-2 border-[#5e3dc6] hover:border-[#4e32a9] transition-all duration-300 ease-in-out">
+
+            <!-- Text Content -->
+            <div class="flex flex-col">
+                <span class="font-semibold text-white hover:text-white">
+                    Hello, <span id="user-firstname"></span><i class="fa-regular fa-face-grin-wide"></i>
+                </span>
+                <span id="user-email" class="text-sm text-gray-200 mt-1"></span>
             </div>
+        </div>
+        </div>
 
             <!-- Mobile Menu Button -->
             <div class="md:hidden flex items-center">
@@ -469,13 +478,14 @@
                 const userData = doc.data();
 
                 // Update UI elements with data from the Firestore document
-                document.getElementById("user-firstname").innerText = userData.firstname || "N/A";
-                document.getElementById("user-firstnameII").innerText = userData.firstname || "N/A";
-                document.getElementById("user-balance").innerText = userData.balance ? "N" + userData.balance : "N/A";
+                document.getElementById("user-firstname").innerText = `${userData.firstname}`; 
+                document.getElementById("user-firstnameII").innerText = `${userData.firstname}`; 
+                document.getElementById("user-email").innerText = userData.email || "N/A";
+                document.getElementById("user-balance").innerText = `₦${userData.balance.toLocaleString()}`;
                 document.getElementById("user-address").innerText = userData.address || "N/A";
                 document.getElementById("user-bvn").innerText = userData.bvn || "N/A";
                 document.getElementById("user-phone").innerText = userData.phone || "N/A";
-                document.getElementById("user-email").innerText = userData.email || "N/A";
+
                 document.getElementById("user-country").innerText = userData.country || "N/A";
                 document.getElementById("user-account").innerText = userData.account || "N/A";
 
@@ -513,4 +523,28 @@
         users();
     };
 
+</script>
+
+<!-- image display -->
+<script>
+    firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        const userId = user.uid;
+
+        // Retrieve the profile image URL from Firestore
+        db.collection("Profile").doc(userId).get().then((doc) => {
+            if (doc.exists && doc.data().profileimage) {
+                // Set the saved profile image URL as the src of the image element
+                document.getElementById("dashboardLogo").src = doc.data().profileimage;
+            } else {
+                console.log("No profile image found.");
+            }
+        }).catch((error) => {
+            console.error("Error retrieving profile image: ", error);
+        });
+
+    } else {
+        console.log("No user is signed in.");
+    }
+    });
 </script>

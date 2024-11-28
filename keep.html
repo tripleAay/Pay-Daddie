@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TriplePay Dashboard</title>
+    <link rel="stylesheet" href="./css/app.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background-color: #cea6e4;
+        color: #333;
+    }
+
+    .home-nav {
+        cursor: pointer;
+        display: inline-block;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .send-nav {
+        cursor: pointer;
+        display: inline-block;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .pay-nav {
+        cursor: pointer;
+        display: inline-block;
+        padding: 10px;
+        text-align: center;
+    }
+
+
+    .page {
+        opacity: 1;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    /* Splash-Out Animation */
+    @keyframes splashOut {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.5);
+            opacity: 0.5;
+        }
+
+        100% {
+            transform: scale(0);
+            opacity: 0;
+        }
+    }
+
+    /* Hide element after animation */
+
+
+    .scrollbar-thin::-webkit-scrollbar {
+        height: 8px; /* Height for horizontal scrollbar */
+    }
+    .scrollbar-thumb-gray-400::-webkit-scrollbar-thumb {
+        background-color: #888; /* Thumb color */
+        border-radius: 4px;
+    }
+    .scrollbar-track-gray-200::-webkit-scrollbar-track {
+        background-color: #e0e0e0; /* Track color */
+        border-radius: 4px;
+    }
+
+    /* Firefox scrollbar styling */
+    .scrollbar-thin {
+        scrollbar-width: thin;
+    }
+    .scrollbar-thumb-gray-400 {
+        scrollbar-color: #888 #e0e0e0;
+    }
+</style>
+
+<body>
+    <nav class="bg-[#EEF8FF] shadow-md py-4 px-6 sticky top-0 z-50 border-b-2 border-b-[#EEB1D5]">
+        <div class=" container mx-auto flex justify-between items-center">
+            <!-- Logo Section -->
+            <div
+                class="logo text-[#5e3dc6] font-bold text-xl hover:text-[#4e32a9] transition-all duration-300 ease-in-out">
+                <a href="./index.html">PayDaddie</a>
+            </div>
+
+            <!-- Menu Items -->
+            <div class="menu text-gray-600 hidden md:flex space-x-6 text-gray-600 font-medium">
+                <a id="home-nav" href="./dashboard.html"
+                    class=" flex items-center hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                    <i id="nav-entry" class="page fa-solid fa-house mr-2"> <span>Home</span> </i>
+                </a>
+                <a id="send-nav" href="./send.html"
+                    class="flex items-center hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                    <i id="send-entry" class="page fa-solid fa-paper-plane mr-2"></i> Send
+                </a>
+                <a id="pay-nav" href="./pay.html"
+                    class="flex items-center hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                    <i id="pay-entry" class="page fa-solid fa-money-bill-wave mr-2"></i>Pay
+
+                </a>
+                <a id="gift-nav" href="./giftcards.html"
+                    class="hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                    <i id="gift-entry" class="page fa-solid fa-wallet mr-2"></i> My Wallet
+
+                    </span>
+                </a>
+                <a id="card-nav" href="./card.html"
+                    class="flex items-center hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                    <i id="card-entry" class="page fa-solid fa-credit-card mr-2"></i> Card
+                </a>
+            </div>
+
+            <!-- Account Section -->
+            <div class="account flex items-center space-x-4 cursor-pointer  bg-[#3B28CC] p-2 rounded-lg  hover:bg-[] transition-all duration-300 ease-in-out shadow-sm"
+                onclick="window.location.href='./profile.html'">
+                <span class="font-semibold text-white hover:text-white ">Hello &#128512; <span
+                        id="user-firstname"></span></span>
+                <img id="profileImagePreview" alt="Profile Picture"
+                    class="w-10 h-10 rounded-full object-cover border-2 border-[#5e3dc6] hover:border-[#4e32a9] transition-all duration-300 ease-in-out">
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center">
+                <button class="text-gray-600 focus:outline-none" id="mobile-menu-button">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu hidden md:hidden mt-4 space-y-4 text-center text-gray-600 font-medium" id="mobile-menu">
+            <a href="./dashboard.html"
+                class="block hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                <i id="" class="fa-solid fa-house mr-2"></i> Home
+            </a>
+            <a href="./send.html"
+                class="block hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                <i class="fa-solid fa-paper-plane mr-2"></i> Send
+            </a>
+            <a href="./pay.html"
+                class="block hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                <i class="fa-solid fa-money-bill-wave mr-2"></i> Pay
+            </a>
+            <a href="./giftcards.html"
+                class="block hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                <i class="fa-solid fa-wallet mr-2"></i> Wallet
+            </a>
+            <a href="./card.html"
+                class="block hover:text-[#5e3dc6] transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+                <i class="fa-solid fa-credit-card mr-2"></i> Card
+            </a>
+        </div>
+    </nav>
+
+
+
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+
+
+
+
+    <!-- MONEY SEND SECTION DISPLAY -->
+
+    <div id="spend-section" class="w-full min-h-screen flex items-center justify-center bg-[#5E3DC6] p-4">
+        <div class="dashboard-information w-full max-w-2xl p-6 border-2 border-[#EEB1D5] rounded-lg bg-white shadow-lg">
+            
+            <!-- Beneficiary Section -->
+            <div class="beneficiary-section">
+                
+            </div>
+            
+    
+            <!-- Send to Bank Section -->
+            <div id="sendBank" class="Group-Bank mt-10">
+                <div class="sendBank-icon flex items-center justify-between p-5 bg-gradient-to-r from-green-600 to-green-400 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer relative hover:bg-red ">
+                    <div class="flex items-center space-x-4">
+                        <i class="fa-solid fa-paper-plane text-xl text-white transition-colors duration-300 hover:text-green-800"></i>
+                        <div>
+                            <h4 class="font-bold text-lg text-white transition-colors duration-300 hover:text-green-800">Send to Bank Account</h4>
+                            <p class="text-sm text-white opacity-90 transition-colors duration-300 hover:text-green-700">Send to a local bank account</p>
+                        </div>
+                    </div>
+            
+                    <!-- Spinner Overlay -->
+                    <div id="spinner" class="hidden absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 rounded-lg">
+                        <div class="w-6 h-6 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                    </div>
+                </div>
+            </div>
+            
+    
+            <!-- Transaction History Section -->
+            <div class="transaction-history max-w-full mt-16">
+                <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                    <!-- Transaction list -->
+                    <ul id="transaction-history" class="divide-y divide-gray-200 p-4">
+                        <!-- Transactions will populate here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div id="sendBank-input" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center z-50 overflow-hidden">
+        <div class="form-card bg-white shadow-xl rounded-2xl max-w-md w-full max-h-[90vh] p-8 space-y-6 relative overflow-y-auto">
+            <!-- Back and Add Beneficiary Buttons -->
+            <div class="absolute top-4 left-4 w-full pr-4 flex items-center justify-between">
+                <!-- Back Button -->
+                <a id="back-send" href="#" class="text-[#5e3dc6] hover:text-[#4a34b8] text-lg font-semibold flex items-center transition-all duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i> Back
+                </a>
+    
+                <!-- Add Beneficiary Button -->
+                <button type="button" id="add-beneficiary-btn" class="bg-[#5e3dc6] hover:bg-[#4a34b8] text-white font-semibold py-1.5 px-4 text-sm rounded-full shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                    <i class="fas fa-user-plus text-white mr-1.5"></i> Add Beneficiary
+                </button>
+            </div>
+    
+            <!-- Form Header -->
+            <h2 class="text-2xl font-bold text-gray-800 text-center mt-10">Send to Bank Account <span class="flag">🇳🇬</span></h2>
+            <h3 class="text-lg text-gray-500 text-center">New NGN Recipient</h3>
+    
+            <!-- Form -->
+            <form id="form" class="space-y-6">
+                <!-- Bank Selection -->
+                <div class="input-group">
+                    <label for="bank" class="block text-sm font-semibold text-gray-700">Bank</label>
+                    <div class="relative">
+                        <select id="banks" required class="block w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 focus:ring-[#5e3dc6] focus:border-[#5e3dc6] transition duration-300">
+                            <option value="" disabled selected>Select Bank</option>
+                            <option value="pay-daddie">Pay Daddie</option>
+                            <!-- Add more options here -->
+                        </select>
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </div>
+                </div>
+    
+                <!-- Account Number Input -->
+                <div class="input-group">
+                    <label for="account-number" class="block text-sm font-semibold text-gray-700">Account Number</label>
+                    <input type="number" id="account-number" placeholder="1234567890" required class="block w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 focus:ring-[#5e3dc6] focus:border-[#5e3dc6] transition duration-300">
+                </div>
+                <p id="receiver-info" class="text-xs text-gray-500"></p>
+    
+                <!-- Amount Input -->
+                <div class="input-group">
+                    <label for="Amount" class="block text-sm font-semibold text-gray-700">Amount</label>
+                    <input type="number" id="Amount" placeholder="NGN" required class="block w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 focus:ring-[#5e3dc6] focus:border-[#5e3dc6] transition duration-300">
+                </div>
+    
+                <!-- Transaction Description Input -->
+                <div class="input-group">
+                    <label for="description" class="block text-sm font-semibold text-gray-700">Transaction Description</label>
+                    <textarea id="description" placeholder="Enter a brief description of the transaction..." required class="block w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 focus:ring-[#5e3dc6] focus:border-[#5e3dc6] transition duration-300 h-24"></textarea>
+                </div>
+    
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn w-full py-3 bg-[#5e3dc6] text-white font-semibold rounded-lg hover:bg-[#4a34b8] focus:ring-4 focus:ring-[#c3b9ec] transition-all duration-300 ease-in-out">
+                    Pay Now
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <footer class="bg-[#5e3dc6] text-white py-8 px-4 sm:px-10 lg:px-20">
+        <div class="max-w-screen-xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+            <!-- Logo and Description -->
+            <div class="flex flex-col space-y-4">
+                <h2 class="text-2xl font-semibold text-white">Pay Daddie</h2>
+                <p class="text-sm text-gray-300">
+                    Simplifying finance, empowering your future. Pay Daddie offers secure and efficient financial
+                    solutions for </br> everyone.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Home</a></li>
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">About Us</a></li>
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Services</a></li>
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">FAQs</a></li>
+                    <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Information -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                <p class="text-sm text-gray-300">28 Ibitoye Str, Ajegunle-Apapa, Lagos</p>
+                <p class="text-sm text-gray-300">Email: support@paydaddie.com</p>
+                <p class="text-sm text-gray-300">Phone: +234 817 1347 263</p>
+            </div>
+
+            <!-- Social Media Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://www.instagram.com/"
+                        class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="mt-8 border-t border-gray-500 pt-6 text-center text-xs text-gray-400">
+            <p>&copy; 2024 Pay Daddie. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+
+
+
+    <button id="signout-button" class="sticky-signout-button">Sign Out</button>
+
+</body>
+
+</html>
+
+
+<script src="./js/script.js"></script>
+
+
+
+<script>
+    // Get the elements
+    const sendBank = document.getElementById('sendBank');
+    const sendBankInput = document.getElementById('sendBank-input');
+    const backSend = document.getElementById('back-send');
+    const spinner = document.getElementById('spinner');
+
+    // Show the spinner and popup when "Send to Bank" is clicked
+    sendBank.addEventListener('click', () => {
+        spinner.classList.remove('hidden'); // Show the spinner
+
+        // After 2 seconds, hide spinner and show the form
+        setTimeout(() => {
+            spinner.classList.add('hidden'); // Hide spinner
+            sendBankInput.classList.remove('hidden'); // Show form
+        }, 2000);
+    });
+
+    // Hide the popup when "Back" is clicked
+    backSend.addEventListener('click', (e) => {
+        e.preventDefault();
+        sendBankInput.classList.add('hidden'); // Hide form
+    });
+</script>
+
+<script>
+    // Function to load Nigerian banks into the dropdown
+    async function loadBanks() {
+        const response = await fetch('https://api.paystack.co/bank', {
+            headers: {
+                'Authorization': 'sk_live_4c0c483de863154878275348e33ced549d7ca07d', // Replace with your secret key
+            }
+        });
+        const data = await response.json();
+        const banks = data.data; // Array of banks
+
+        const dropdown = document.getElementById('banks');
+
+        // Loop through the banks and add them to the dropdown
+        banks.forEach(bank => {
+            const option = document.createElement('option');
+            option.value = bank.code; // The bank code will be used in your app
+            option.textContent = bank.name; // Display the bank name
+            dropdown.appendChild(option); // Add option to the dropdown
+        });
+    }
+
+    // Load the banks when the page loads
+    loadBanks();
+</script>
+
+
+<!-- NAV BAR EFFECTS -->
+<script>
+    document.getElementById("home-nav").addEventListener("click", function (event) {
+        event.preventDefault(); // prevent immediate navigation
+
+        const navEntry = document.getElementById("nav-entry");
+
+        // Add splash animation
+        navEntry.style.animation = "splashOut 1s ease forwards";
+
+        // Wait for 3 seconds (duration of animation) then navigate
+        setTimeout(() => {
+            // Navigate to another page or perform other actions
+            window.location.href = "./dashboard.html"; // Replace with your URL
+        }, 2000); // 3 seconds
+    });
+</script>
+<script>
+    document.getElementById("send-nav").addEventListener("click", function (event) {
+        event.preventDefault(); // prevent immediate navigation
+
+        const sendEntry = document.getElementById("send-entry");
+
+        // Add splash animation
+        sendEntry.style.animation = "splashOut 1s ease forwards";
+
+        // Wait for 3 seconds (duration of animation) then navigate
+        setTimeout(() => {
+            // Navigate to another page or perform other actions
+            window.location.href = "./send.html"; // Replace with your URL
+        }, 2000); // 3 seconds
+    });
+</script>
+<script>
+    document.getElementById("pay-nav").addEventListener("click", function (event) {
+        event.preventDefault(); // prevent immediate navigation
+
+        const payEntry = document.getElementById("pay-entry");
+
+        // Add splash animation
+        payEntry.style.animation = "splashOut 1s ease forwards";
+
+        // Wait for 3 seconds (duration of animation) then navigate
+        setTimeout(() => {
+            // Navigate to another page or perform other actions
+            window.location.href = "./pay.html"; // Replace with your URL
+        }, 2000); // 3 seconds
+    });
+</script>
+<script>
+    document.getElementById("gift-nav").addEventListener("click", function (event) {
+        event.preventDefault(); // prevent immediate navigation
+
+        const giftEntry = document.getElementById("gift-entry");
+
+        // Add splash animation
+        giftEntry.style.animation = "splashOut 1s ease forwards";
+
+        // Wait for 3 seconds (duration of animation) then navigate
+        setTimeout(() => {
+            // Navigate to another page or perform other actions
+            window.location.href = "./giftcards.html"; // Replace with your URL
+        }, 2000); // 3 seconds
+    });
+</script>
+<script>
+    document.getElementById("card-nav").addEventListener("click", function (event) {
+        event.preventDefault(); // prevent immediate navigation
+
+        const cardEntry = document.getElementById("card-entry");
+
+        // Add splash animation
+        cardEntry.style.animation = "splashOut 1s ease forwards";
+
+        // Wait for 3 seconds (duration of animation) then navigate
+        setTimeout(() => {
+            // Navigate to another page or perform other actions
+            window.location.href = "./card.html"; // Replace with your URL
+        }, 2000); // 3 seconds
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- beneficiary button  -->
+<script>
+    // Function to save beneficiary information
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById('add-beneficiary-btn').addEventListener('click', async function () {
+            const bankSelect = document.getElementById('banks');
+            const accountNumberInput = document.getElementById('account-number');
+
+            const bankValue = bankSelect.value.trim();
+            const accountNumberValue = accountNumberInput.value.trim();
+
+            if (!bankValue && !accountNumberValue) {
+                alert("Kindly fill your Beneficiary Details");
+                return;
+            }
+
+            const currentUserData = localStorage.getItem('currentUser');
+            if (!currentUserData) {
+                alert("No user is currently logged in.");
+                return;
+            }
+
+            async function beneficiaryThing() {
+                let foundUser = null;
+
+                const querySnapshot = await db.collection("users").get();
+                querySnapshot.forEach((doc) => {
+                    if (doc.data().account == accountNumberValue) {
+                        foundUser = {
+                            account: doc.data().account,
+                            firstname: doc.data().firstname,
+                            lastname: doc.data().lastname,
+                        };
+                    }
+                });
+
+                return foundUser;
+            }
+
+            try {
+                const { uid } = JSON.parse(currentUserData);
+                const userRef = db.collection("users").doc(uid);
+                const userDoc = await userRef.get();
+
+                if (!userDoc.exists) {
+                    alert("User data not found.");
+                    return;
+                }
+
+                const foundUser = await beneficiaryThing(); // Call the function and capture the result
+                if (!foundUser) {
+                    alert("No matching user found with this account number.");
+                    return;
+                }
+
+                const beneficiaryRef = userRef.collection("beneficiary");
+                const existingBeneficiary = await beneficiaryRef.doc(accountNumberValue).get();
+
+                if (existingBeneficiary.exists) {
+                    alert("A beneficiary with this account number already exists.");
+                    return;
+                }
+
+                await beneficiaryRef.doc(accountNumberValue).set(foundUser);
+
+                alert("Beneficiary added successfully!");
+                bankSelect.value = "";
+                accountNumberInput.value = "";
+            } catch (error) {
+                console.error("Error adding beneficiary:", error);
+                alert("There was an error adding the beneficiary. Please try again.");
+            }
+        });
+    });
+
+</script>
+
+
+<!-- money transfer and recieving  -->
+
+<script> 
+    document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const banks = document.getElementById('banks').value;
+        const accountNumber = document.getElementById("account-number").value.trim();
+        const amount = parseFloat(document.getElementById("Amount").value); 
+        const description = document.getElementById("description").value;
+
+        const currentUserData = localStorage.getItem("currentUser");
+
+        if (!currentUserData) {
+            console.log("Invalid user");
+            return;
+        }
+
+        const { uid } = JSON.parse(currentUserData);
+
+        // Fetch sender's data
+        const userRef = await db.collection("users").doc(uid).get();
+        const userDoc = userRef.data();
+
+        if (!userDoc) {
+            console.log("User document not found");
+            return;
+        }
+
+        async function recieverTrigger() {
+            let foundUser = null;
+
+            // Search for receiver in users collection
+            const querySnapshot = await db.collection("users").get();
+            querySnapshot.forEach((doc) => {
+                if (doc.data().account == accountNumber) {
+                    foundUser = {
+                        email: doc.data().email,
+                        id: doc.id,
+                        balance: doc.data().balance,
+                        account: doc.data().account,
+                        firstname: doc.data().firstname,
+                        lastname: doc.data().lastname,
+                    };
+                }
+            });
+
+            if (!foundUser) {
+                alert("Receiver account not found");
+                return null;
+            }
+            return foundUser;
+        }
+
+        async function moneyMath(receiver) {
+            const senderBalance = userDoc.balance;
+
+            // Check if the amount is valid
+            if (amount <= 0 || amount > senderBalance) {
+                alert("Invalid amount or insufficient balance");
+                return false;
+            }
+
+            // Deduct from sender and update Firestore
+            await db.collection("users").doc(uid).update({
+                balance: senderBalance - amount,
+            });
+
+            // Add to receiver and update Firestore
+            await db.collection("users").doc(receiver.id).update({
+                balance: receiver.balance + amount,
+            });
+
+            return true;
+        }
+
+        const receiver = await recieverTrigger();
+        if (receiver) {
+            const success = await moneyMath(receiver);
+            if (success) {
+                alert("Transfer successful");
+            }
+        }
+    });
+});
+
+        
+    </script> 
+
+<!-- beneficiary display -->
+   
+<!-- display hsitory -->
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        const transactionHistoryList = document.getElementById("transaction-history");
+
+        // Retrieve current user data from local storage
+        const currentUserData = localStorage.getItem("currentUser");
+        if (!currentUserData) {
+            console.log("Invalid user");
+            return;
+        }
+
+        const { uid } = JSON.parse(currentUserData);
+
+        try {
+            // Fetch transactions for the current user
+            const transactionsSnapshot = await db.collection("users")
+                .doc(uid)
+                .collection("transactions")
+                .orderBy("date", "desc")  // Order transactions by date
+                .get();
+
+            transactionsSnapshot.forEach((doc) => {
+                const transaction = doc.data();
+
+                // Format the date and time
+                const transactionDate = new Date(transaction.date);
+                const formattedTime = transactionDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                // Create list item for each transaction
+                const listItem = document.createElement("li");
+                listItem.className = "flex items-center justify-between py-4 px-6";
+
+                // Create inner HTML for the transaction item
+                listItem.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <img src="https://example.com/kuda-logo.png" alt="Pay Daddie" class="h-10 w-10">
+                        <div>
+                            <p class="font-medium text-gray-800">${transaction.to.name}</p>
+                            <p class="text-sm text-gray-500">${formattedTime}</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-800">₦${transaction.amount.toLocaleString()}</p>
+                `;
+
+                // Append the list item to the transaction history list
+                transactionHistoryList.appendChild(listItem);
+            });
+
+            if (transactionsSnapshot.empty) {
+                console.log("No transactions found.");
+            }
+        } catch (error) {
+            console.error("Error fetching transaction history:", error);
+        }
+    });
+</script>
+
+
+

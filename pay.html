@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TriplePay Dashboard</title>
     <link rel="stylesheet" href="./css/app.css">
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
@@ -116,13 +120,21 @@
                 </a>
             </div>
 
-            <!-- Account Section -->
-            <div class="account flex items-center space-x-4 cursor-pointer  bg-[#3B28CC] p-2 rounded-lg  hover:bg-[] transition-all duration-300 ease-in-out shadow-sm"
+            <!-- Account Section -->    
+            <div class="account flex items-center space-x-4 cursor-pointer bg-[#3B28CC] p-4 rounded-lg hover:bg-[#4e32a9] transition-all duration-300 ease-in-out shadow-sm"
                 onclick="window.location.href='./profile.html'">
-                <span class="font-semibold text-white hover:text-white ">Hello &#128512; <span
-                        id="user-firstname"></span></span>
-                <img id="profileImagePreview" alt="Profile Picture"
-                    class="w-10 h-10 rounded-full object-cover border-2 border-[#5e3dc6] hover:border-[#4e32a9] transition-all duration-300 ease-in-out">
+
+                <!-- Profile Image -->
+                <img id="dashboardLogo" alt="Profile Picture"
+                    class="w-12 h-12 rounded-full object-cover border-2 border-[#5e3dc6] hover:border-[#4e32a9] transition-all duration-300 ease-in-out">
+
+                <!-- Text Content -->
+                <div class="flex flex-col">
+                    <span class="font-semibold text-white hover:text-white">
+                        Hello, <span id="user-firstname"></span><i class="fa-regular fa-face-grin-wide"></i>
+                    </span>
+                    <span id="user-email" class="text-sm text-gray-200 mt-1"></span>
+                </div>
             </div>
 
             <!-- Mobile Menu Button -->
@@ -334,6 +346,74 @@
 </html>
 <script src="./js/script.js"></script>
 <script src="https://js.paystack.co/v1/inline.js"></script>
+<!-- display functio -->
+<script>
+    function users() {
+        // Retrieve the currentUser data from localStorage
+        const currentUserData = localStorage.getItem('currentUser');
+
+        if (!currentUserData) {
+            console.log("No user ID found in localStorage.");
+            window.location.href = 'login.html'; // Redirect to login if no user is stored
+            return; // Exit if no currentUserData is found
+        }
+
+        const { uid } = JSON.parse(currentUserData); // Parse and extract the UID from the stored data
+
+        // Reference the Firestore document using the UID
+        const docRef = db.collection("users").doc(uid);
+
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+                const userData = doc.data();
+
+                // Update UI elements with data from the Firestore document
+                document.getElementById("user-firstname").innerText = `${userData.firstname}`; 
+                document.getElementById("user-email").innerText = userData.email || "N/A";
+                document.getElementById("user-balance").innerText = `₦${userData.balance.toLocaleString()}`;
+                document.getElementById("user-address").innerText = userData.address || "N/A";
+                document.getElementById("user-bvn").innerText = userData.bvn || "N/A";
+                document.getElementById("user-phone").innerText = userData.phone || "N/A";
+
+                document.getElementById("user-country").innerText = userData.country || "N/A";
+                document.getElementById("user-account").innerText = userData.account || "N/A";
+
+                // Display "Last updated X ago" for balance timestamp
+                if (userData.balanceTimestamp) {
+                    const balanceTimestamp = userData.balanceTimestamp.toDate();
+                    const updateTimeAgo = getTimeAgo(balanceTimestamp);
+                    document.getElementById("balance-timestamp").innerText = `Last updated ${updateTimeAgo}`;
+                } else {
+                    document.getElementById("balance-timestamp").innerText = "N/A";
+                }
+            } else {
+                console.log("No such document!");
+                alert("No user data found in Firestore.");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+    }
+
+    // Helper function to calculate time ago in seconds, minutes, or hours
+    function getTimeAgo(timestamp) {
+        const now = new Date();
+        const secondsAgo = Math.floor((now - timestamp) / 1000);
+
+        if (secondsAgo < 60) return `${secondsAgo}s ago`;
+        const minutesAgo = Math.floor(secondsAgo / 60);
+        if (minutesAgo < 60) return `${minutesAgo}m ago`;
+        const hoursAgo = Math.floor(minutesAgo / 60);
+        return `${hoursAgo}h ago`;
+    }
+
+    // Call the users function to fetch and display the user data
+    window.onload = function () {
+        users();
+    };
+
+</script>
 
 <script>
     // Show the modal when "Pay Now for Airtime" button is clicked
@@ -468,37 +548,61 @@
 
 <script>
     document.getElementById('paystack-btn').addEventListener('click', function () {
-    // Show the spinner and hide the button
-    const spinner = document.getElementById('spinner');
-    const button = this;
-    
-    button.classList.add('hidden'); // Hide the button
-    spinner.classList.remove('hidden'); // Show the spinner
-    
-    // Wait for 2 seconds
-    setTimeout(() => {
-        // Call Paystack setup
-        var handler = PaystackPop.setup({
-            key: 'pk_live_e99f325375ceeaf6e5b48e14ff423f6ad031ebe0', // Replace with your public key
-            email: 'adeshina93@gmail.com', // Customer's email
-            amount: 500000, // Amount in kobo (for example, 5000 NGN = 500000 kobo)
-            currency: 'NGN',
-            ref: 'ref_' + new Date().getTime(), // Generate a unique reference
-            callback: function (response) {
-                // Handle successful payment here
-                console.log('Payment complete! Reference: ' + response.reference);
-                // Call your server to verify the transaction and top up balance
-            },
-            onClose: function () {
-                alert('Transaction was not completed, window closed.');
+        // Show the spinner and hide the button
+        const spinner = document.getElementById('spinner');
+        const button = this;
+
+        button.classList.add('hidden'); // Hide the button
+        spinner.classList.remove('hidden'); // Show the spinner
+
+        // Wait for 2 seconds
+        setTimeout(() => {
+            // Call Paystack setup
+            var handler = PaystackPop.setup({
+                key: 'pk_live_e99f325375ceeaf6e5b48e14ff423f6ad031ebe0', // Replace with your public key
+                email: 'adeshina93@gmail.com', // Customer's email
+                amount: 500000, // Amount in kobo (for example, 5000 NGN = 500000 kobo)
+                currency: 'NGN',
+                ref: 'ref_' + new Date().getTime(), // Generate a unique reference
+                callback: function (response) {
+                    // Handle successful payment here
+                    console.log('Payment complete! Reference: ' + response.reference);
+                    // Call your server to verify the transaction and top up balance
+                },
+                onClose: function () {
+                    alert('Transaction was not completed, window closed.');
+                }
+            });
+            handler.openIframe();
+
+            // Hide the spinner and show the button again
+            spinner.classList.add('hidden');
+            button.classList.remove('hidden');
+        }, 2000); // 2 seconds
+    });
+
+</script>
+
+<!-- image display -->
+<script>
+    firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        const userId = user.uid;
+
+        // Retrieve the profile image URL from Firestore
+        db.collection("Profile").doc(userId).get().then((doc) => {
+            if (doc.exists && doc.data().profileimage) {
+                // Set the saved profile image URL as the src of the image element
+                document.getElementById("dashboardLogo").src = doc.data().profileimage;
+            } else {
+                console.log("No profile image found.");
             }
+        }).catch((error) => {
+            console.error("Error retrieving profile image: ", error);
         });
-        handler.openIframe();
 
-        // Hide the spinner and show the button again
-        spinner.classList.add('hidden');
-        button.classList.remove('hidden');
-    }, 2000); // 2 seconds
-});
-
+    } else {
+        console.log("No user is signed in.");
+    }
+    });
 </script>

@@ -24,6 +24,29 @@
         /* background-color: black; */
 
     }
+
+    .slider-container {
+      overflow: hidden;
+      width: 100%;
+      position: relative;
+    }
+
+    .slider-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .slider-dot {
+      cursor: pointer;
+    }
+
+    .slider-dot.active {
+      background-color: #4b5563; /* Tailwind's gray-700 */
+    }
+
+
+
+
 </style>
 
 <body>
@@ -31,154 +54,106 @@
     <div class="container">
 
         <!-- Responsive Nav Bar using TailwindCSS -->
-        <nav class="bg-[#BFBB9C] p-4 fixed w-full z-50 shadow-md">
-            <div class="container mx-auto flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="bg-black h-10 w-36"></div>
-                    <!-- Main Navigation Links -->
-                    <ul class="hidden md:flex space-x-6">
-                        <li class="relative group">
-                            <a href="#about" class="text-white hover:bg-white/50 p-2 rounded transition">About</a>
-                            <div
-                                class="absolute left-0 hidden mt-1 group-hover:flex flex-col bg-white shadow-lg rounded">
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">Our Team</a>
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">Mission</a>
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">Vision</a>
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">History</a>
-                            </div>
-                        </li>
-                        <li class="relative group">
-                            <a href="#services" class="text-white hover:bg-white/50 p-2 rounded transition">Services</a>
-                            <div
-                                class="absolute left-0 hidden mt-1 group-hover:flex flex-col bg-white shadow-lg rounded">
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">Web Design</a>
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">SEO</a>
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">Marketing</a>
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">Support</a>
-                            </div>
-                        </li>
-                        <li class="relative group">
-                            <a href="#contact" class="text-white hover:bg-white/50 p-2 rounded transition">Contact</a>
-                            <div
-                                class="absolute left-0 hidden mt-1 group-hover:flex flex-col bg-white shadow-lg rounded">
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">Email Us</a>
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">Call Us</a>
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">Visit Us</a>
-                                <a href="#" class="p-2 hover:bg-gray-200 transition">FAQ</a>
-                            </div>
-                        </li>
-                    </ul>
+        <header class="bg-[#5e3dc6] shadow-md relative">
+            <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <img src="./assets/image/pay daddie.png" alt="Logo" class="h-11 w-22 mr-2">
                 </div>
-
-                <!-- Right Navigation (Sign In/Create Account) -->
-                <div class="flex items-center space-x-4">
-                    <a href="./signin.html"
-                        class="bg-black text-white py-2 px-4 rounded hover:bg-white hover:text-black transition">Sign
-                        In</a>
-                    <a href="./signuprocess.html"
-                        class="bg-[#0c1825] text-white py-2 px-4 rounded hover:bg-[#ffcc00] hover:text-black transition">Create
-                        Free Account</a>
-                    <!-- Mobile Menu Toggle -->
-                    <button id="menu-toggle" class="md:hidden flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            class="w-6 h-6 text-black">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16m-7 6h7" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Mobile Navigation Menu -->
-            <div id="mobile-menu" class="md:hidden hidden bg-white shadow-md">
-                <ul class="flex flex-col p-4 space-y-2">
-                    <li><a href="#about" class="block text-black hover:bg-gray-200 p-2 rounded">About</a></li>
-                    <li><a href="#services" class="block text-black hover:bg-gray-200 p-2 rounded">Services</a></li>
-                    <li><a href="#contact" class="block text-black hover:bg-gray-200 p-2 rounded">Contact</a></li>
-                    <li><a href="./signin.html" class="block text-black hover:bg-gray-200 p-2 rounded">Sign In</a></li>
-                    <li><a href="./singupprocess.html" class="block text-black hover:bg-gray-200 p-2 rounded">Create Free
-                            Account</a></li>
-                </ul>
-            </div>
-        </nav>
-
-        <div class="main">
-            <div>
-                <div class="main-sub">
-                    <div class="app-entry">
-                        <div class="mainApp-section">
-                            <h1>The Money App for <br> Africans</h1>
-                            <p> Experience seamless transfers, tap into cashless <br> convenience,
-                                and grow your savings with TriplePay <br> —your all-in-one digital
-                                wallet for smarter <br> money management. </p>
-                            <div class="callToActions">
-                                <button class="callToApple">Get on Apple</button>
-                                <button class="calltoAndriod">Get on Andriod</button>
-                            </div>
-                            <div class="licenseAction"></div>
-                        </div>
-                        <div class="mainAppImg-section">
-                            <div class="prev"><i style="font-size: 30px; cursor: pointer;"
-                                    class="fa-solid fa-chevron-left"></i></div>
-                            <img style="width: 480px; height:  300px;  ;" src="./assets/image/pic.png" alt="">
-                            <div class="next"><i style="font-size: 30px; cursor: pointer;"
-                                    class="fa-solid fa-chevron-right"></i></div>
+                <nav class="hidden md:flex space-x-6 text-white relative">
+                    <div class="group relative">
+                        <a href="#" class="hover:text-black transition-colors">Why PayDaddie</a>
+                        <div class="absolute left-0 top-full bg-white shadow-lg hidden group-hover:flex flex-col p-2 w-48 z-10">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Our Vision</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Testimonials</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Case Studies</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Partnerships</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">FAQs</a>
                         </div>
                     </div>
-                    <div class="Services-section w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-6 mt-16">
-                        <!-- Services Tiles -->
-                        <div class="serviceTile bg-[#5e3dc6] text-white p-6 rounded-lg shadow-lg">
-                            <h2 class="text-2xl font-bold mb-2">Money Transfers</h2>
-                            <p>Effortlessly send and receive money worldwide with just a few taps. Our secure platform
-                                guarantees quick, hassle-free transactions for friends, family, and payments.</p>
-                        </div>
-                        <div class="serviceTile bg-[#5e3dc6] text-white p-6 rounded-lg shadow-lg">
-                            <h2 class="text-2xl font-bold mb-2">Customer Registration</h2>
-                            <p>Get started quickly with our simple and secure registration process. Create your account
-                                in minutes and access a full range of financial services with ease.</p>
-                        </div>
-                        <div class="serviceTile bg-[#5e3dc6] text-white p-6 rounded-lg shadow-lg">
-                            <h2 class="text-2xl font-bold mb-2">Airtime Recharge</h2>
-                            <p>Top up your mobile airtime instantly. Our app supports multiple carriers, allowing you to
-                                recharge your phone or your loved ones' phones conveniently from anywhere.</p>
-                        </div>
-                        <div class="serviceTile bg-[#5e3dc6] text-white p-6 rounded-lg shadow-lg">
-                            <h2 class="text-2xl font-bold mb-2">Bills Payment</h2>
-                            <p>Manage and pay all your bills effortlessly. From utilities to subscriptions, keep track
-                                of your payments and avoid late fees with our easy-to-use bill payment feature.</p>
+                    <div class="group relative">
+                        <a href="#" class="hover:text-black transition-colors">Trading</a>
+                        <div class="absolute left-0 top-full bg-white shadow-lg hidden group-hover:flex flex-col p-2 w-48 z-10">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Market Overview</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Stock Trading</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Forex Trading</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Crypto Trading</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Trading Strategies</a>
                         </div>
                     </div>
-
-                    <div class="section-below">
-                        <div class="left_section-below">
-                            <h1>Your phone + <br>
-                                our app + <br>
-                                a debit card = <br>
-                                a simpler life.</h1>
-                            <p>TriplePay is crafted for your dynamic lifestyle, offering a seamless digital wallet
-                                experience. Get your TriplePay debit card and unlock smarter, more secure ways to manage
-                                your money</p>
-                            <div style="margin-top: 20px; display: flex; align-items: center; justify-content: left;"><a
-                                    style="margin-right: 15px;" href="./singupprocess.html">Open An Account in Minutes
-                                </a> <i class="fa-solid fa-angle-right"></i></div>
-                        </div>
-                        <div class="right_section-below">
-                            <img style="width: 510px; height: 510px;" src="./assets/image/app_img-01-01.png" alt="">
+                    <div class="group relative">
+                        <a href="#" class="hover:text-black transition-colors">Services</a>
+                        <div class="absolute left-0 top-full bg-white shadow-lg hidden group-hover:flex flex-col p-2 w-48 z-10">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Portfolio Management</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Financial Advisory</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Market Research</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Investment Plans</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Risk Assessment</a>
                         </div>
                     </div>
+                    <div class="group relative">
+                        <a href="#" class="hover:text-black transition-colors">Careers</a>
+                        <div class="absolute left-0 top-full bg-white shadow-lg hidden group-hover:flex flex-col p-2 w-48 z-10">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Job Openings</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Internships</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Company Culture</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Employee Benefits</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Join Us</a>
+                        </div>
+                    </div>
+                    <div class="group relative">
+                        <a href="#" class="hover:text-black transition-colors">About Us</a>
+                        <div class="absolute left-0 top-full bg-white shadow-lg hidden group-hover:flex flex-col p-2 w-48 z-10">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Our Story</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Meet the Team</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Press Releases</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Contact Us</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Privacy Policy</a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="flex space-x-4">
+                    <a href="./signin.html">
+                        <button class="hidden md:block border border-gray-300 px-4 py-2 text-white rounded hover:bg-gray-100 hover:text-black transition">Log In</button>
+                    </a>
+                    <a href="./singupprocess.html">
+                        <button class="bg-[#0091f9] text-white px-4 py-2 rounded hover:bg-[#FFBD00] transition">Open Free Account</button>
+                    </a>
                 </div>
             </div>
+        </header>
 
 
 
-        </div>
-        <div class="sectionII-below">
-            <img src="./assets/image/stock.jpg" alt="">
-            <div></div>
+        
+            <div class="slider-container w-full h-[90vh] relative">
+                <!-- Slider -->
+                <div id="sliderTrack" class="slider-track w-full h-full">
+                  <!-- Slides -->
+                  <div class="w-full h-full flex-shrink-0">
+                    <img src="./assets/image/slide b (2).jpg" class="w-full h-full object-cover">
+                  </div>
+                  <div class="w-full h-full flex-shrink-0">
+                    <img src="./assets/image/slide c.jpg" class="w-full h-full object-cover">
+                  </div>
+                  <div class="w-full h-full flex-shrink-0">
+                    <img src="./assets/image/slide a.jpg" class="w-full h-full object-cover">
+                  </div>
+                  <div class="w-full h-full flex-shrink-0">
+                    <img src="./assets/image/slide d.jpg" class="w-full h-full object-cover">
+                  </div>
+                </div>
+              
+                <!-- Dots -->
+                <div id="sliderDots" class="flex justify-center space-x-2 mt-4 absolute bottom-4 w-full">
+                  <div class="slider-dot w-4 h-4 rounded-full bg-gray-300" data-index="0"></div>
+                  <div class="slider-dot w-4 h-4 rounded-full bg-gray-300" data-index="1"></div>
+                  <div class="slider-dot w-4 h-4 rounded-full bg-gray-300" data-index="2"></div>
+                  <div class="slider-dot w-4 h-4 rounded-full bg-gray-300" data-index="3"></div>
+                </div>
+              </div>
+              
 
-            <div></div>
-
-        </div>
+      
         <section class="testimonials">
             <h2>Don’t just take our word for it</h2>
             <div class="testimonials-container">
@@ -210,83 +185,84 @@
                 </div>
             </div>
             <div class="logos">
-                <img src="logo1.png" alt="TechCrunch">
-                <img src="logo2.png" alt="World Economic Forum">
+                <img src="logo1.png" alt="Daddieshinor Media">
+                <img src="logo2.png" alt="Paydaddie">
                 <img src="logo3.png" alt="Fintech Futures">
                 <img src="logo4.png" alt="BBC">
                 <img src="logo5.png" alt="CNBC Africa">
                 <img src="logo6.png" alt="Euromoney">
             </div>
         </section>
-        <footer class="tp-footer">
-            <div class="tp-footer-container">
-                <div class="tp-footer-logo">
-                    <img src="path-to-logo/kuda-logo.png" alt="TriplePay Logo">
+        <div class="sectionII-below">
+            <img src="./assets/image/stock.jpg" alt="">
+            <div></div>
+
+            <div></div>
+
+        </div>
+
+        <!-- footer  -->
+        <footer class="bg-[#5e3dc6] text-white py-8 px-4 sm:px-10 lg:px-20">
+            <div class="max-w-screen-xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    
+                <!-- Logo and Description -->
+                <div class="flex flex-col space-y-4">
+                    <h2 class="text-2xl font-semibold text-white">Pay Daddie</h2>
+                    <p class="text-sm text-gray-300">
+                        Simplifying finance, empowering your future. Pay Daddie offers secure and efficient financial
+                        solutions for </br> everyone.
+                    </p>
                 </div>
-                <div class="tp-footer-links">
-                    <div class="tp-footer-section">
-                        <h4 class="tp-footer-heading">Personal</h4>
-                        <ul class="tp-footer-list">
-                            <li><a href="#">Discover Personal</a></li>
-                            <li><a href="#">Transfer & Spend</a></li>
-                            <li><a href="#">Save</a></li>
-                            <li><a href="#">Investments</a></li>
-                            <li><a href="#">TriplePay card</a></li>
-                        </ul>
-                    </div>
-                    <div class="tp-footer-section">
-                        <h4 class="tp-footer-heading">Business</h4>
-                        <ul class="tp-footer-list">
-                            <li><a href="#">Discover Business</a></li>
-                            <li><a href="#">Business Registration</a></li>
-                            <li><a href="#">softPOS</a></li>
-                            <li><a href="#">Invoicing</a></li>
-                            <li><a href="#">Salary Loan</a></li>
-                            <li><a href="#">Business API</a></li>
-                            <li><a href="#">Join TriplePay Business</a></li>
-                        </ul>
-                    </div>
-                    <div class="tp-footer-section">
-                        <h4 class="tp-footer-heading">Company</h4>
-                        <ul class="tp-footer-list">
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Press</a></li>
-                            <li><a href="#">Join Our Team</a></li>
-                            <li><a href="#">About Us</a></li>
-                        </ul>
-                    </div>
-                    <div class="tp-footer-section">
-                        <h4 class="tp-footer-heading">Help</h4>
-                        <ul class="tp-footer-list">
-                            <li><a href="#">Get Help</a></li>
-                            <li><a href="#">Scam Awareness</a></li>
-                            <li><a href="#">FAQs</a></li>
-                            <li><a href="#">Security</a></li>
-                            <li><a href="#">Contact Us</a></li>
-                            <li><a href="#">Self Help</a></li>
-                        </ul>
-                    </div>
-                    <div class="tp-footer-section">
-                        <h4 class="tp-footer-heading">Transparency</h4>
-                        <ul class="tp-footer-list">
-                            <li><a href="#">Terms & Conditions</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Information Security Policy</a></li>
-                            <li><a href="#">Cookie Policy</a></li>
-                            <li><a href="#">Whistleblowing Policy</a></li>
-                        </ul>
+    
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Home</a></li>
+                        <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">About Us</a></li>
+                        <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Services</a></li>
+                        <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">FAQs</a></li>
+                        <li><a href="#" class="hover:text-[#BFBB9C] transition duration-200">Contact</a></li>
+                    </ul>
+                </div>
+    
+                <!-- Contact Information -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <p class="text-sm text-gray-300">28 Ibitoye Str, Ajegunle-Apapa, Lagos</p>
+                    <p class="text-sm text-gray-300">Email: support@paydaddie.com</p>
+                    <p class="text-sm text-gray-300">Phone: +234 817 1347 263</p>
+                </div>
+    
+                <!-- Social Media Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://www.instagram.com/"
+                            class="text-gray-300 hover:text-[#BFBB9C] transition duration-200">
+                            <i class="fab fa-instagram"></i>
+                        </a>
                     </div>
                 </div>
-                <div class="tp-footer-app-links">
-                    <a href="#"><img src="./assets/image/apple-01.png " alt="Download on the App Store"></a>
-                    <a href="#"><img src="path-to-play-store-logo" alt="Get it on Google Play"></a>
-                    <a href="#"><img src="path-to-web-logo" alt="Sign in on the Web"></a>
-                </div>
-                <p class="tp-footer-disclaimer">Products may vary by country or market.</p>
+            </div>
+    
+            <!-- Footer Bottom -->
+            <div class="mt-8 border-t border-gray-500 pt-6 text-center text-xs text-white">
+                <p class="text-white">&copy; 2024 Pay Daddie. All rights reserved.</p>
             </div>
         </footer>
-
-
+     
+        
+        
 
     </div>
 
@@ -302,3 +278,41 @@
     });
 
 </script>
+
+<script>
+    // JavaScript for Slider Functionality
+    const sliderTrack = document.getElementById("sliderTrack");
+    const dots = document.querySelectorAll(".slider-dot");
+    const totalSlides = dots.length;
+  
+    let currentIndex = 0;
+    let autoSlideInterval = setInterval(nextSlide, 4000); // Auto-slide every 4 seconds
+  
+    function updateSlider(index) {
+      sliderTrack.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === index);
+      });
+    }
+  
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateSlider(currentIndex);
+    }
+  
+    function setSlide(index) {
+      clearInterval(autoSlideInterval); // Stop auto-sliding when user interacts
+      currentIndex = index;
+      updateSlider(currentIndex);
+      autoSlideInterval = setInterval(nextSlide, 4000); // Restart auto-slide
+    }
+  
+    // Add event listeners for dots
+    dots.forEach((dot, index) => {
+      dot.addEventListener("click", () => setSlide(index));
+    });
+  
+    // Initial display
+    updateSlider(currentIndex);
+  </script>
+  

@@ -53,12 +53,17 @@
                     Back
                 </button>
 
+                <div class="hidden">
+                    <img id="dashboardLogo" alt="Profile Picture"
+                    class="w-12 h-12 rounded-full object-cover border-2 border-[#5e3dc6] hover:border-[#4e32a9] transition-all duration-300 ease-in-out">
+                </div>
+
                 <!-- Profile Picture Upload -->
                 <div class="flex items-center justify-center mb-8">
                     <div class="relative">
                         <img id="profileImagePreview" src="https://via.placeholder.com/150" alt="Profile"
                             class="w-32 h-32 rounded-full object-cover border-4 border-purple-500 shadow-lg">
-                        <input type="file" id="profilePic"
+                        <input type="file"  id="imageUpload" 
                             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             onchange="previewImage(event)">
                     </div>
@@ -66,7 +71,7 @@
                         <h2 class="text-xl font-semibold text-gray-800">Upload Profile Picture</h2>
                         <p class="text-sm text-gray-500">Click to select and upload a new profile image</p>
                         <div class="flex items-center justify-between space-x-4">
-                            <button id="uploadButton"
+                            <button onclick="uploadImage()" 
                                 class="mt-2 bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-[#1B5299]">
                                 Upload Image
                             </button>
@@ -351,3 +356,78 @@
     });
 
 </script>
+
+<!-- upload image -->
+<script>
+    let selectedFile;
+  
+    // Select file on change
+    document.getElementById("imageUpload").addEventListener("change", (event) => {
+      selectedFile = event.target.files[0];
+    });
+  
+    // Upload Image Function
+    function uploadImage() {
+      if (!selectedFile) {
+        alert("Please select an image to upload.");
+        return;
+      }
+  
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          const userId = user.uid;
+          const storageRef = firebase.storage().ref(); 
+          const userImageRef = storageRef.child(`ProfileImages/${userId}/profile.jpg`);
+  
+          // Upload the file to Firebase Storage
+          userImageRef.put(selectedFile).then((snapshot) => {
+            console.log("Uploaded the file successfully!");
+  
+            // Get the download URL
+            userImageRef.getDownloadURL().then((url) => {
+              // Set the image in the dashboard div
+              document.getElementById("dashboardLogo").src = url;
+  
+              // Update Firestore with the download URL
+              db.collection("Profile")
+                .doc(userId)
+                .set({ profileimage: url }, { merge: true })
+                .then(() => {
+                  alert("Profile Picture updated successfully!");
+                  console.log("Profile Picture updated successfully!");
+                })
+                .catch((error) => {
+                  console.error("Error updating profile: ", error);
+                });
+            });
+          }).catch((error) => {
+            console.error("Error uploading image: ", error);
+          });
+        } else {
+          alert("No user is signed in.");
+        }
+      });
+    }
+
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            const userId = user.uid;
+
+            // Retrieve the profile image URL from Firestore
+            db.collection("Profile").doc(userId).get().then((doc) => {
+                if (doc.exists && doc.data().profileimage) {
+                    // Set the saved profile image URL as the src of the image element
+                    document.getElementById("dashboardLogo").src = doc.data().profileimage;
+                } else {
+                    console.log("No profile image found.");
+                }
+            }).catch((error) => {
+                console.error("Error retrieving profile image: ", error);
+            });
+
+        } else {
+            console.log("No user is signed in.");
+        }
+        });
+  
+ </script>

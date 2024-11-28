@@ -199,13 +199,13 @@
         }
 
         function generateDebitCardNumber() {
-            const cardNum = " "; 
-            for(let i=0; i<4; i++){
-                const numGen = Math.floor(1000 + Math.random()*9000);
-                cardNum = numGen++; 
-            }
-            return cardNum; // Generates random 16-digit number
-        }
+    let cardNum = "";
+    for (let i = 0; i < 4; i++) {
+        const numGen = Math.floor(1000 + Math.random() * 9000);
+        cardNum += numGen.toString(); 
+    }
+    return cardNum; // Returns a random 16-digit number as a string
+}
 
         function generateCVV() {
             return Math.floor(Math.random() * 1000).toString().padStart(3, '0'); // Generates random 3-digit CVV
